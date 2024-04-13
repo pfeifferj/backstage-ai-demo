@@ -20,3 +20,5 @@ zombie:
   image: quay.io/pfeifferj/zombie
   replicas: 1
   tag: latest
+  configMap:
+    name: zombie

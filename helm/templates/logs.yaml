@@ -97,4 +97,4 @@ immutable: false
 data:
   ENABLE_REDIS_FORWARDING: 'true'
   REDIS_DB: '0'
-  REDIS_HOST: redis-service.fries.svc.cluster.local # changeme to {{ .Values.redis.....}}
+  REDIS_HOST: {{ .Values.redis.name }}.{{ .Values.redis.namespace | default .Values.namespace }}.cluster.local
