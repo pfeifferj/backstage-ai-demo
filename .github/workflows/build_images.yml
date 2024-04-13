@@ -4,8 +4,8 @@ name: Build and Push Images
 on:
   push:
     paths:
-      - 'log-forwarding/**'
-      - 'zombie/**'
+      - 'images/log-forwarding/**'
+      - 'images/zombie/**'
   workflow_dispatch:
 
 jobs:
@@ -14,31 +14,39 @@ jobs:
     strategy:
       matrix:
         dir: ['log-forwarding', 'zombie']
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Podman
-        uses: redhat-actions/setup-podman@v1
-
-      - name: Read namespace from Helm values
+      - name: Read namespace & cluster url from Helm values
         id: helm_values
         run: |
-          NAMESPACE=$(yq e '.namespace' ${{ matrix.dir }}/helm/values.yaml)
-          echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
-          echo "::set-output name=namespace::$NAMESPACE"
-
-      - name: Build image
-        run: |
-          cd ${{ matrix.dir }}
-          podman build -t default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/${{ steps.helm_values.outputs.namespace }}/${{ matrix.dir }}:latest .
-
-      - name: Log in to OpenShift registry
-        run: podman login default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASSWORD }}
+          REGISTRY=$(yq e '.registry_org_url' helm/values.yaml)
+          echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
+      
+      - name: Log in to registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ env.REGISTRY }}
+ 
+      - name: Build image using Buildah
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          context: images/${{ matrix.dir }}
+          containerfiles: images/${{ matrix.dir }}/Containerfile
+          image: ${{ matrix.dir }}
+          tags: latest
+          tls-verify: true
 
       - name: Push image
-        run: podman push default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/${{ steps.helm_values.outputs.namespace }}/${{ matrix.dir }}:latest
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ env.REGISTRY }}
 
       - name: Print image url
-        run: echo "Image pushed to default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/${{ steps.helm_values.outputs.namespace }}/${{ matrix.dir }}:latest"
+        run: echo "Image pushed to ${{ env.REGISTRY }}/${{ matrix.dir }}:latest"

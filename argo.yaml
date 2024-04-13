@@ -2,15 +2,15 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: backstage-ai-demo
-  namespace: backstage-ai-demo
+  namespace: openshift-gitops
 spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/pfeifferj/backstage-ai-demo/tree/main/helm'
-    targetRevision: 1.0.0
-    chart: https://github.com/pfeifferj/backstage-ai-demo/tree/main/helm
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: backstage-ai-demo
+  project: default
+  source:
+    path: helm
+    repoURL: 'https://github.com/pfeifferj/backstage-ai-demo'
+    targetRevision: HEAD
   syncPolicy:
-    automated: {}
+    automated:
+      selfHeal: true

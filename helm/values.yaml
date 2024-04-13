@@ -1,17 +1,20 @@
 namespace: backstage-ai-demo
+description: 'demo to showcase how AI-powered insights can be generated from backstage'
 cluster_url: apps.ocp4-prd.josie.cloud
+registry_org_url: quay.io/pfeifferj
 
 logs:
     name: log-forwarding
     replicas: 1
-    image: image-registry.openshift-image-registry.svc:5000/fries/minimalistic-webserver
+    image: quay.io/pfeifferj/log-forwarding
     tag: latest
     port:
     configMap:
-        name:
+        name: log-forwarding
 
 redis:
-    name:
+    name: redis
 
-zomebie:
-    name:
+zombie:
+    name: zombie
+    image: quay.io/pfeifferj/zombie
