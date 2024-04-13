@@ -5,6 +5,7 @@ metadata:
   namespace: openshift-gitops
 spec:
   destination:
+    namespace: backstage-ai-demo
     server: 'https://kubernetes.default.svc'
   project: default
   source:
@@ -14,8 +15,9 @@ spec:
     helm:
       releaseName: backstage-ai-demo
       valueFiles:
-        - values.yaml
-      
+        - helm/values.yaml 
   syncPolicy:
     automated:
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
