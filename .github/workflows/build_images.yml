@@ -1,11 +1,11 @@
 ---
-name: Build and Push Images
+name: Build and Push Zombie & Log-Forwarding
 
 on:
-  push:
-    paths:
-      - 'images/log-forwarding/**'
-      - 'images/zombie/**'
+  # push:
+    # paths:
+      # - 'images/log-forwarding/**'
+      # - 'images/zombie/**'
   workflow_dispatch:
 
 jobs:

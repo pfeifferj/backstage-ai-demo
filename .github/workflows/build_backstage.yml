@@ -1,0 +1,57 @@
+name: Build and Push Backstage
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: 'quay.io/pfeifferj'
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: 'pfeifferj/backstage'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Compile TypeScript
+        run: yarn tsc
+
+      - name: Build the backend
+        run: yarn build:backend --config app-config.yaml
+
+      - name: Log in to registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ env.REGISTRY }}
+
+      - name: Build image using Buildah
+        uses: redhat-actions/buildah-build@v2
+        with:
+          context: 'images/backstage'
+          containerfiles: 'images/backstage/Containerfile'
+          image: backstage
+          tags: latest
+          tls-verify: true
+
+      - name: Push image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: latest
+          registry: ${{ env.REGISTRY }}
+
+      - name: Print image URL
+        run: echo "Image pushed to ${{ env.REGISTRY }}/backstage:latest"

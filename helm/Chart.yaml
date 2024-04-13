@@ -1,0 +1,8 @@
+apiVersion: v2
+name: backstage-ai-demo
+description: A Helm chart to showcase AI recommendations in backstage
+
+type: application
+
+version: 0.1.0
+appVersion: "1.16.0"
