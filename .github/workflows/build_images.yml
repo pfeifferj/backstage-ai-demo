@@ -1,5 +1,5 @@
 ---
-name: Build and Push Minimalistic Webserver Image
+name: Build and Push Images
 
 on:
   workflow_dispatch:
@@ -7,6 +7,9 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ['log-forwarding', 'zombie']
 
     steps:
       - name: Checkout repository
@@ -15,16 +18,23 @@ jobs:
       - name: Set up Podman
         uses: redhat-actions/setup-podman@v1
 
+      - name: Read namespace from Helm values
+        id: helm_values
+        run: |
+          NAMESPACE=$(yq e '.namespace' ${{ matrix.dir }}/helm/values.yaml)
+          echo "NAMESPACE=$NAMESPACE" >> $GITHUB_ENV
+          echo "::set-output name=namespace::$NAMESPACE"
+
       - name: Build image
         run: |
-          cd log-forwarding
-          podman build -t default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/fries/minimalistic-webserver:latest .
+          cd ${{ matrix.dir }}
+          podman build -t default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/${{ steps.helm_values.outputs.namespace }}/${{ matrix.dir }}:latest .
 
       - name: Log in to OpenShift registry
         run: podman login default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Push image
-        run: podman push default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/fries/minimalistic-webserver:latest
+        run: podman push default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/${{ steps.helm_values.outputs.namespace }}/${{ matrix.dir }}:latest
 
       - name: Print image url
-        run: echo "Image pushed to default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/fries/minimalistic-webserver:latest"
+        run: echo "Image pushed to default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/${{ steps.helm_values.outputs.namespace }}/${{ matrix.dir }}:latest"
