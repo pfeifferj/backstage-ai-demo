@@ -1,0 +1,17 @@
+namespace: backstage-ai-demo
+cluster_url: apps.ocp4-prd.josie.cloud
+
+logs:
+    name: log-forwarding
+    replicas: 1
+    image: image-registry.openshift-image-registry.svc:5000/fries/minimalistic-webserver
+    tag: latest
+    port:
+    configMap:
+        name:
+
+redis:
+    name:
+
+zomebie:
+    name:

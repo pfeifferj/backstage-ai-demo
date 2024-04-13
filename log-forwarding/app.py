@@ -62,10 +62,19 @@ def log_post():
         data = request.form.to_dict()
         app.logger.info(f"Received POST request with form data: {data}")
 
-    if enable_redis_forwarding:
+
+    if 'enable_redis_forwarding' in request.args:
+        data = request.json
         try:
-            redis_client.set('posted_data', str(data))
+            user_id = data[0]['user'].split('/')[-1]
+
+            data_str = json.dumps(data)
+
+            timestamp = data[0]['timestamp']
+            redis_client.hset(f"user:{user_id}:events", timestamp, data_str)
+
             app.logger.info("Data sent to Redis.")
+            return jsonify({"message": "Data successfully saved to Redis"}), 200
         except Exception as e:
             app.logger.error(f"Failed to save data to Redis: {e}")
             return jsonify({"message": "Failed to save data to Redis", "error": str(e)}), 500

@@ -1,0 +1,30 @@
+---
+name: Build and Push Minimalistic Webserver Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Podman
+        uses: redhat-actions/setup-podman@v1
+
+      - name: Build image
+        run: |
+          cd log-forwarding
+          podman build -t default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/fries/minimalistic-webserver:latest .
+
+      - name: Log in to OpenShift registry
+        run: podman login default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Push image
+        run: podman push default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/fries/minimalistic-webserver:latest
+
+      - name: Print image url
+        run: echo "Image pushed to default-route-openshift-image-registry.apps.ocp4-prd.josie.cloud/fries/minimalistic-webserver:latest"
