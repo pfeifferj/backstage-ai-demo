@@ -31,7 +31,6 @@ spec:
             containers:
                 - name: {{ .Values.logs.name }}
                   image: '{{ .Values.logs.image }}:{{ .Values.logs.tag }}'
-                  imagePullPolicy: {{ .Values.image.pullPolicy }}
                   ports:
                       - containerPort: {{ .Values.logs.port }}
                         protocol: TCP
@@ -39,7 +38,6 @@ spec:
                       - configMapRef:
                             name: {{ .Values.logs.configMap.name }}
             restartPolicy: Always
-
 ---
 kind: Service
 apiVersion: v1

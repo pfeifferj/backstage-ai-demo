@@ -8,9 +8,14 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: default
   source:
-    path: helm
+    chart: backstage-ai-demo
+    targetRevision: 0.1.0
     repoURL: 'https://github.com/pfeifferj/backstage-ai-demo'
-    targetRevision: HEAD
+    helm:
+      releaseName: backstage-ai-demo
+      valueFiles:
+        - values.yaml
+      
   syncPolicy:
     automated:
       selfHeal: true
