@@ -11,12 +11,6 @@ _These items can be substituted with upstream projects, however the code contain
 
 ### Setup
 
-```
-helm package helm
-Successfully packaged chart and saved it to: backstage-ai-demo-0.1.0.tgz
-helm repo index helm
-```
-
 `oc apply -f argo.yaml`
 
 ...
