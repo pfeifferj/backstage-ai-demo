@@ -28,8 +28,14 @@ jobs:
         run: yarn tsc
 
       - name: Build the backend
-        run: yarn build:backend --config app-config.yaml
+        run: yarn build:backend --config /home/runner/work/backstage-ai-demo/backstage-ai-demo/app-config.yaml
 
+      - name: Checkout containerfile repository
+        uses: actions/checkout@v3
+        with:
+          path: 'images/backstage'
+          ref: 'main' 
+      
       - name: Log in to registry
         uses: redhat-actions/podman-login@v1
         with:
@@ -40,7 +46,7 @@ jobs:
       - name: Build image using Buildah
         uses: redhat-actions/buildah-build@v2
         with:
-          context: 'images/backstage'
+          context: './'
           containerfiles: 'images/backstage/Containerfile'
           image: backstage
           tags: latest
