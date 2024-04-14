@@ -1,46 +1,60 @@
-import time
-import random
 import os
-
+import random
+import time
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-chrome_options = Options()
-chrome_options.binary_location = "/usr/bin/google-chrome"
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shm-usage')
+driver = webdriver.Chrome(options=options)
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+target_website = os.environ.get('URL', 'https://www.example.com')
 
-def navigate_to_website(url):
-    driver.get(url)
+recorded_actions = [
+    # Add recorded actions
+    # read from files in dir maybe?
+]
 
-def click_random_button():
-    buttons = driver.find_elements(By.TAG_NAME, "button")
-    if buttons:
-        random.choice(buttons).click()
+def perform_random_click():
+    try:
+        clickable_elements = driver.find_elements(By.CSS_SELECTOR, 'a, button, input[type="submit"], [onclick]')
+        
+        if clickable_elements:
+            random_element = random.choice(clickable_elements)
+            
+            random_element.click()
+            print(f"Clicked element: {random_element.tag_name}")
+        else:
+            print("No clickable elements found.")
+    except (TimeoutException, NoSuchElementException):
+        print("Element not found or timed out.")
 
-def fill_random_text_field():
-    text_fields = driver.find_elements(By.TAG_NAME, "input")
-    if text_fields:
-        field = random.choice(text_fields)
-        field.send_keys("Random Text" + Keys.RETURN)
+def perform_recorded_action(action):
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, action['selector']))
+        )
+        
+        if action['type'] == 'click':
+            element.click()
+            print(f"Performed recorded click action on element: {action['selector']}")
+    except (TimeoutException, NoSuchElementException):
+        print(f"Element not found or timed out for recorded action: {action['selector']}")
 
-def navigate_random_link():
-    links = driver.find_elements(By.TAG_NAME, "a")
-    if links:
-        random.choice(links).click()
+driver.get(target_website)
 
-actions = [click_random_button, fill_random_text_field, navigate_random_link]
-
-def perform_random_actions(url, action_count=10):
-    navigate_to_website(url)
-    for _ in range(action_count):
-        random.choice(actions)()
-        time.sleep(2)  # Wait for 2 seconds between actions
-
-if __name__ == "__main__":
-    perform_random_actions(os.getenv('URL', 'example.com'), 20)
+while True:
+    interval = random.uniform(0.1, 2)
+    
+    if random.random() < 0.5 and recorded_actions:
+        random_action = random.choice(recorded_actions)
+        perform_recorded_action(random_action)
+    else:
+        perform_random_click()
+    
+    time.sleep(interval)

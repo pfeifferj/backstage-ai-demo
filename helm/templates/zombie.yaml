@@ -17,7 +17,12 @@ metadata:
         app.openshift.io/route-disabled: 'false'
         image.openshift.io/triggers: |
             [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.image }}:{{ .Values.tag }}", "namespace": "{{ .Values.zombie.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.zombie.name }}')].image", "pause": "false" }]
-
+    labels:
+        app: {{ .Values.zombie.name }}
+        app.kubernetes.io/component: {{ .Values.zombie.name }}
+        app.kubernetes.io/instance: {{ .Values.zombie.name }}
+        app.kubernetes.io/name: {{ .Values.zombie.name }}
+        app.kubernetes.io/part-of: {{ .Values.zombie.name }}
 spec:
     replicas: {{ .Values.zombie.replicas }}
     selector:

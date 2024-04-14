@@ -1,8 +1,14 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: {{ .Values.redis.name }}
-  namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+    name: {{ .Values.redis.name }}
+    namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+    labels:
+        app: {{ .Values.redis.name }}
+        app.kubernetes.io/component: {{ .Values.redis.name }}
+        app.kubernetes.io/instance: {{ .Values.redis.name }}
+        app.kubernetes.io/name: {{ .Values.redis.name }}
+        app.kubernetes.io/part-of: {{ .Values.redis.name }}
 spec:
   replicas: 1
   selector:
@@ -69,8 +75,14 @@ type: Opaque
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.redis.name }}
-  namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+    name: {{ .Values.redis.name }}
+    namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+    labels:
+        app: {{ .Values.redis.name }}
+        app.kubernetes.io/component: {{ .Values.redis.name }}
+        app.kubernetes.io/instance: {{ .Values.redis.name }}
+        app.kubernetes.io/name: {{ .Values.redis.name }}
+        app.kubernetes.io/part-of: {{ .Values.redis.name }}
 spec:
   externalTrafficPolicy: Cluster
   ipFamilies:

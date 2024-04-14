@@ -10,14 +10,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: {{ .Values.logs.name }}
-    namespace: {{ .Values.logs.namespace | default .Values.namespace }}
-    annotations:
-        alpha.image.policy.openshift.io/resolve-names: '*'
-        app.openshift.io/route-disabled: 'false'
-        image.openshift.io/triggers: |
-            [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.image }}:{{ .Values.tag }}", "namespace": "{{ .Values.logs.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.logs.name }}')].image", "pause": "false" }]
-
+  name: {{ .Values.logs.name }}
+  namespace: {{ .Values.logs.namespace | default .Values.namespace }}
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    app.openshift.io/route-disabled: 'false'
+    image.openshift.io/triggers: |
+      [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.image }}:{{ .Values.tag }}", "namespace": "{{ .Values.logs.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.logs.name }}')].image", "pause": "false" }]
+  labels:
+    app: {{ .Values.logs.name }}
+    app.kubernetes.io/component: {{ .Values.logs.name }}
+    app.kubernetes.io/instance: {{ .Values.logs.name }}
+    app.kubernetes.io/name: {{ .Values.logs.name }}
+    app.kubernetes.io/part-of: {{ .Values.logs.name }}
 spec:
     replicas: {{ .Values.logs.replicas }}
     selector:
