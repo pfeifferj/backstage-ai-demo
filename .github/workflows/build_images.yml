@@ -21,7 +21,7 @@ jobs:
       - name: Read namespace & cluster url from Helm values
         id: helm_values
         run: |
-          REGISTRY=$(yq e '.registry_org_url' helm/values.yaml)
+          REGISTRY=$(yq e '.registry_org_url' charts/backstage-ai-demo/values.yaml)
           echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
       
       - name: Log in to registry
