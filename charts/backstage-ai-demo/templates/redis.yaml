@@ -1,0 +1,101 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+    name: {{ .Values.redis.name }}
+    namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+    labels:
+        app: {{ .Values.redis.name }}
+        app.kubernetes.io/component: {{ .Values.redis.name }}
+        app.kubernetes.io/instance: {{ .Values.redis.name }}
+        app.kubernetes.io/name: {{ .Values.redis.name }}
+        app.kubernetes.io/part-of: {{ .Values.redis.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.name }}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: {{ .Values.redis.name }}
+    spec:
+      containers:
+        - resources:
+            limits:
+              memory: 10Gi
+          readinessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          name: {{ .Values.redis.name }}
+          livenessProbe:
+            tcpSocket:
+              port: 6379
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 20
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redis.name }}
+                  key: password
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          terminationMessagePolicy: File
+          image: 'redis:6.2'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {{ .Values.redis.name }}
+  namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+data:
+  password: d291bGR5b3VsaWtlZnJpZXM= # b64enc
+type: Opaque
+---
+kind: Service
+apiVersion: v1
+metadata:
+    name: {{ .Values.redis.name }}
+    namespace: {{ .Values.redis.namespace | default .Values.namespace }}
+    labels:
+        app: {{ .Values.redis.name }}
+        app.kubernetes.io/component: {{ .Values.redis.name }}
+        app.kubernetes.io/instance: {{ .Values.redis.name }}
+        app.kubernetes.io/name: {{ .Values.redis.name }}
+        app.kubernetes.io/part-of: {{ .Values.redis.name }}
+spec:
+  externalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+      nodePort: 31164
+  internalTrafficPolicy: Cluster
+  allocateLoadBalancerNodePorts: true
+  type: LoadBalancer
+  ipFamilyPolicy: SingleStack
+  sessionAffinity: None
+  selector:
+    app: {{ .Values.redis.name }}
