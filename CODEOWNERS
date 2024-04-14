@@ -1,0 +1,19 @@
+# In this example, @doctocat owns any file in the `/docs`
+# directory in the root of your repository and any of its
+# subdirectories.
+# /docs/ @doctocat
+
+# In this example, any change inside the `/scripts` directory
+# will require approval from @doctocat or @octocat.
+# /scripts/ @doctocat @octocat
+
+.github/workflows/build_backstage @pfeifferj
+
+helm/templates/backstage/* @pfeifferj
+helm/templates/logs/* @pfeifferj
+helm/templates/redis/* @pfeifferj
+helm/templates/zombie/* @pfeifferj
+
+images/backstage/* @pfeifferj
+images/log-forwarding/* @pfeifferj
+images/zombie/* @pfeifferj
