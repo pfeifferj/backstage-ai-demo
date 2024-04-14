@@ -1,0 +1,105 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+    name: {{ .Values.logs.name }}
+    namespace: {{ .Values.logs.namespace | default .Values.namespace }}
+spec:
+    lookupPolicy:
+        local: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.logs.name }}
+  namespace: {{ .Values.logs.namespace | default .Values.namespace }}
+  annotations:
+    alpha.image.policy.openshift.io/resolve-names: '*'
+    app.openshift.io/route-disabled: 'false'
+    image.openshift.io/triggers: |
+      [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.image }}:{{ .Values.tag }}", "namespace": "{{ .Values.logs.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.logs.name }}')].image", "pause": "false" }]
+  labels:
+    app: {{ .Values.logs.name }}
+    app.kubernetes.io/component: {{ .Values.logs.name }}
+    app.kubernetes.io/instance: {{ .Values.logs.name }}
+    app.kubernetes.io/name: {{ .Values.logs.name }}
+    app.kubernetes.io/part-of: {{ .Values.logs.name }}
+spec:
+    replicas: {{ .Values.logs.replicas }}
+    selector:
+        matchLabels:
+            app: {{ .Values.logs.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.logs.name }}
+        spec:
+            containers:
+                - name: {{ .Values.logs.name }}
+                  image: '{{ .Values.logs.image }}:{{ .Values.logs.tag }}'
+                  ports:
+                      - containerPort: {{ .Values.logs.port }}
+                        protocol: TCP
+                  envFrom:
+                      - configMapRef:
+                            name: {{ .Values.logs.configMap.name }}
+            restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.logs.name }}
+  namespace: {{ .Values.logs.namespace | default .Values.namespace }}
+  labels:
+    app: {{ .Values.logs.name }}
+    app.kubernetes.io/component: {{ .Values.logs.name }}
+    app.kubernetes.io/instance: {{ .Values.logs.name }}
+    app.kubernetes.io/name: {{ .Values.logs.name }}
+    app.kubernetes.io/part-of: {{ .Values.logs.name }}
+spec:
+  ports:
+    - name: 5000-tcp
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  selector:
+    app: {{ .Values.logs.name }}
+    deployment: {{ .Values.logs.name }}
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Values.logs.name }}
+  namespace: {{ .Values.logs.namespace | default .Values.namespace }}
+  labels:
+    app: {{ .Values.logs.name }}
+    app.kubernetes.io/component: {{ .Values.logs.name }}
+    app.kubernetes.io/instance: {{ .Values.logs.name }}
+    app.kubernetes.io/name: {{ .Values.logs.name }}
+    app.kubernetes.io/part-of: {{ .Values.logs.name }}
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: {{ .Values.logs.name }}-{{ .Values.logs.namespace | default .Values.namespace }}.{{ .Values.cluster_url }}
+  to:
+    kind: Service
+    name: {{ .Values.logs.name }}
+    weight: 100
+  port:
+    targetPort: 5000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.logs.name }}
+  namespace: {{ .Values.logs.namespace | default .Values.namespace }}
+immutable: false
+data:
+  ENABLE_REDIS_FORWARDING: 'true'
+  REDIS_DB: '0'
+  REDIS_HOST: {{ .Values.redis.name }}.{{ .Values.redis.namespace | default .Values.namespace }}.cluster.local

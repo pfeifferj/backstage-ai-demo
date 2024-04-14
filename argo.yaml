@@ -11,28 +11,13 @@ spec:
   source:
     chart: backstage-ai-demo
     targetRevision: 0.1.0
-    repoURL: 'https://github.com/pfeifferj/backstage-ai-demo'
+    repoURL: 'https://pfeifferj.github.io/backstage-ai-demo/'
     helm:
       releaseName: backstage-ai-demo
       valueFiles:
-        - helm/values.yaml 
+        - charts/backstage-ai-demo/values.yaml 
   syncPolicy:
     automated:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: repo-secret
-  namespace: openshift-gitops
-  labels:
-    argocd.argoproj.io/secret-type: repository
-type: Opaque
-stringData:
-  name: backstage-ai-demo
-  type: helm
-  url: https://github.com/pfeifferj/backstage-ai-demo
-  username: pfeifferj
-  password: YOUR_ACCESS_TOKEN

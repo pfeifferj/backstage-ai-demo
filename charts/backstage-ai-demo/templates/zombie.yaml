@@ -1,0 +1,51 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+    name: {{ .Values.zombie.name }}
+    namespace: {{ .Values.zombie.namespace | default .Values.namespace }}
+spec:
+    lookupPolicy:
+        local: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.zombie.name }}
+    namespace: {{ .Values.zombie.namespace | default .Values.namespace }}
+    annotations:
+        alpha.image.policy.openshift.io/resolve-names: '*'
+        app.openshift.io/route-disabled: 'false'
+        image.openshift.io/triggers: |
+            [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.zombie.image }}:{{ .Values.zombie.tag }}", "namespace": "{{ .Values.zombie.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.zombie.name }}')].image", "pause": "false" }]
+    labels:
+        app: {{ .Values.zombie.name }}
+        app.kubernetes.io/component: {{ .Values.zombie.name }}
+        app.kubernetes.io/instance: {{ .Values.zombie.name }}
+        app.kubernetes.io/name: {{ .Values.zombie.name }}
+        app.kubernetes.io/part-of: {{ .Values.zombie.name }}
+spec:
+    replicas: {{ .Values.zombie.replicas }}
+    selector:
+        matchLabels:
+            app: {{ .Values.zombie.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.zombie.name }}
+        spec:
+            containers:
+                - name: {{ .Values.zombie.name }}
+                  image: '{{ .Values.zombie.image }}:{{ .Values.zombie.tag }}'
+                  envFrom:
+                      - configMapRef:
+                            name: {{ .Values.zombie.configMap.name }}
+            restartPolicy: Always
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.zombie.name }}
+  namespace: {{ .Values.zombie.namespace | default .Values.namespace }}
+immutable: false
+data:
+    URL: https://backstage.apps.ocp4-prd.josie.cloud # backstage url
