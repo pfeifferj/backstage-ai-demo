@@ -1,0 +1,13 @@
+---
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    openshift.io/description: {{ .Values.description }}
+    openshift.io/display-name: {{ .Values.namespace }}
+  labels:
+    kubernetes.io/metadata.name: {{ .Values.namespace }}
+  name: {{ .Values.namespace }}
+spec:
+  finalizers:
+  - kubernetes
