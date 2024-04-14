@@ -30,12 +30,11 @@ jobs:
       - name: Build the backend
         run: yarn build:backend --config /home/runner/work/backstage-ai-demo/backstage-ai-demo/app-config.yaml
 
-      - name: Checkout containerfile repository
-        uses: actions/checkout@v3
-        with:
-          path: 'images/backstage'
-          ref: 'main' 
-      
+
+      - name: Download Containerfile
+        run: |
+          curl -H "Accept: application/vnd.github.v3.raw" -L -o Containerfile "https://api.github.com/repos/pfeifferj/backstage-ai-demo/contents/images/backstage/Containerfile"
+ 
       - name: Log in to registry
         uses: redhat-actions/podman-login@v1
         with:
@@ -47,7 +46,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           context: './'
-          containerfiles: 'images/backstage/Containerfile'
+          containerfiles: 'Containerfile'
           image: backstage
           tags: latest
           tls-verify: true

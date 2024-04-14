@@ -91,7 +91,7 @@ spec:
     - protocol: TCP
       port: 6379
       targetPort: 6379
-      nodePort: 31164
+      nodePort: {{ .Values.redis.node_port }}
   internalTrafficPolicy: Cluster
   allocateLoadBalancerNodePorts: true
   type: LoadBalancer
