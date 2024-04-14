@@ -9,10 +9,10 @@
 
 .github/workflows/build_backstage @pfeifferj
 
-helm/templates/backstage/* @pfeifferj
-helm/templates/logs/* @pfeifferj
-helm/templates/redis/* @pfeifferj
-helm/templates/zombie/* @pfeifferj
+charts/backstage-ai-demo/templates/backstage/* @pfeifferj
+charts/backstage-ai-demo/templates/logs/* @pfeifferj
+charts/backstage-ai-demo/templates/redis/* @pfeifferj
+charts/backstage-ai-demo/templates/zombie/* @pfeifferj
 
 images/backstage/* @pfeifferj
 images/log-forwarding/* @pfeifferj
