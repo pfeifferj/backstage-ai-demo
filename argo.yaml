@@ -21,3 +21,18 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: repo-secret
+  namespace: openshift-gitops
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  name: backstage-ai-demo
+  type: helm
+  url: https://github.com/pfeifferj/backstage-ai-demo
+  username: pfeifferj
+  password: YOUR_ACCESS_TOKEN

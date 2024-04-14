@@ -1,5 +1,88 @@
-deploy
---
-svc
---
-route
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+    name: {{ .Values.backstage.name }}
+    namespace: {{ .Values.backstage.namespace | default .Values.namespace }}
+spec:
+    lookupPolicy:
+        local: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.backstage.name }}
+    namespace: {{ .Values.backstage.namespace | default .Values.namespace }}
+    annotations:
+        alpha.image.policy.openshift.io/resolve-names: '*'
+        app.openshift.io/route-disabled: 'false'
+        image.openshift.io/triggers: |
+            [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.backstage.image }}:{{ .Values.backstage.tag }}", "namespace": "{{ .Values.backstage.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.backstage.name }}')].image", "pause": "false" }]
+    labels:
+        app: {{ .Values.backstage.name }}
+        app.kubernetes.io/component: {{ .Values.backstage.name }}
+        app.kubernetes.io/instance: {{ .Values.backstage.name }}
+        app.kubernetes.io/name: {{ .Values.backstage.name }}
+        app.kubernetes.io/part-of: {{ .Values.backstage.name }}
+spec:
+    replicas: {{ .Values.backstage.replicas }}
+    selector:
+        matchLabels:
+            app: {{ .Values.backstage.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.backstage.name }}
+        spec:
+            containers:
+                - name: {{ .Values.backstage.name }}
+                  image: '{{ .Values.backstage.image }}:{{ .Values.backstage.tag }}'
+            restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.backstage.name }}
+  namespace: {{ .Values.backstage.namespace | default .Values.namespace }}
+  labels:
+    app: {{ .Values.backstage.name }}
+    app.kubernetes.io/component: {{ .Values.backstage.name }}
+    app.kubernetes.io/instance: {{ .Values.backstage.name }}
+    app.kubernetes.io/name: {{ .Values.backstage.name }}
+    app.kubernetes.io/part-of: {{ .Values.backstage.name }}
+spec:
+  ports:
+    - name: 3000-tcp
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  selector:
+    app: {{ .Values.backstage.name }}
+    deployment: {{ .Values.backstage.name }}
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Values.backstage.name }}
+  namespace: {{ .Values.backstage.namespace | default .Values.namespace }}
+  labels:
+    app: {{ .Values.backstage.name }}
+    app.kubernetes.io/component: {{ .Values.backstage.name }}
+    app.kubernetes.io/instance: {{ .Values.backstage.name }}
+    app.kubernetes.io/name: {{ .Values.backstage.name }}
+    app.kubernetes.io/part-of: {{ .Values.backstage.name }}
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: {{ .Values.backstage.name }}-{{ .Values.backstage.namespace | default .Values.namespace }}.{{ .Values.cluster_url }}
+  to:
+    kind: Service
+    name: {{ .Values.backstage.name }}
+    weight: 100
+  port:
+    targetPort: 3000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

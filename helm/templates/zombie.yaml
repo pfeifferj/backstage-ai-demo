@@ -16,7 +16,7 @@ metadata:
         alpha.image.policy.openshift.io/resolve-names: '*'
         app.openshift.io/route-disabled: 'false'
         image.openshift.io/triggers: |
-            [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.image }}:{{ .Values.tag }}", "namespace": "{{ .Values.zombie.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.zombie.name }}')].image", "pause": "false" }]
+            [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.zombie.image }}:{{ .Values.zombie.tag }}", "namespace": "{{ .Values.zombie.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.zombie.name }}')].image", "pause": "false" }]
     labels:
         app: {{ .Values.zombie.name }}
         app.kubernetes.io/component: {{ .Values.zombie.name }}

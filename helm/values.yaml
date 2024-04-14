@@ -22,3 +22,9 @@ zombie:
   tag: latest
   configMap:
     name: zombie
+
+backstage:
+  name: backstage
+  image: quay.io/pfeifferj/backstage
+  replicas: 1
+  tag: latest
