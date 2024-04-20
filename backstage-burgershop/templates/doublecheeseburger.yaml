@@ -1,0 +1,81 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-double-cheeseburger
+  title: Order Double Cheeseburger
+  description: Create an order for double cheeseburger with customizable size, sauces, and toppings.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Double Cheeseburger Order Configuration
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          title: Size
+          description: Choose the size of the double cheeseburger.
+          enum:
+            - medium
+            - large
+        sauces:
+          type: array
+          title: Sauces
+          description: Choose sauces for the double cheeseburger.
+          items:
+            type: string
+          enum:
+            - ketchup
+            - mayonnaise
+            - mustard
+          enumNames:
+            - Ketchup
+            - Mayonnaise
+            - Mustard
+        toppings:
+          type: array
+          title: Toppings
+          description: Choose toppings for the double cheeseburger.
+          items:
+            type: string
+          enum:
+            - lettuce
+            - tomato
+            - onion
+            - bacon
+          enumNames:
+            - Lettuce
+            - Tomato
+            - Onion
+            - Bacon
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: double-cheeseburger-order-${{ parameters.size }}
+        repoDescription: 'Double cheeseburger order with size, sauces, and toppings'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Double Cheeseburger Size: ${{ parameters.size }}
+          Sauces: ${{ parameters.sauces }}
+          Toppings: ${{ parameters.toppings }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for double cheeseburger order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Double Cheeseburger Order'

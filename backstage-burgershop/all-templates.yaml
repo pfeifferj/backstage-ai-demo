@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: burgershop-templates
+  description: A collection of all burgershop templates
+spec:
+  targets:
+    - ./templates/cheeseburger.yaml
+    - ./templates/chickennuggets.yaml
+    - ./templates/fries.yaml
+    - ./templates/milkshake.yaml
+    - ./templates/chickentenders.yaml
+    - ./templates/soda.yaml
+    - ./templates/veganburger.yaml
+    - ./templates/salads.yaml
+    - ./templates/onionrings.yaml
+    - ./templates/morzarellasticks.yaml
+    - ./templates/icedtea.yaml
+    - ./templates/doublecheeseburger.yaml
+    - ./templates/coleslaw.yaml

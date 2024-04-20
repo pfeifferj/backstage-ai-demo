@@ -9,4 +9,5 @@ spec:
     - ./all-components.yaml
     - ./all-resources.yaml
     - ./all-systems.yaml
+    - ./all-templates.yaml
     - ./burgershop.yaml

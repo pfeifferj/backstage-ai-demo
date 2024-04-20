@@ -1,0 +1,80 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-vegan-burger
+  title: Order Vegan Burger
+  description: Create an order for a vegan burger with customizable size, sauces, and toppings.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Vegan Burger Order Configuration
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          title: Size
+          enum:
+            - small
+            - medium
+            - large
+          description: Choose the size of the vegan burger.
+        sauces:
+          type: array
+          title: Sauces
+          description: Choose sauces for the vegan burger.
+          items:
+            type: string
+          enum:
+            - ketchup
+            - mustard
+            - vegan mayonnaise
+          enumNames:
+            - Ketchup
+            - Mustard
+            - Vegan Mayonnaise
+        toppings:
+          type: array
+          title: Toppings
+          description: Choose toppings for the vegan burger.
+          items:
+            type: string
+          enum:
+            - lettuce
+            - tomato
+            - vegan cheese
+          enumNames:
+            - Lettuce
+            - Tomato
+            - Vegan Cheese
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: vegan-burger-order-${{ parameters.size }}
+        repoDescription: 'Vegan burger order with size, sauces, and toppings'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Vegan Burger Size: ${{ parameters.size }}
+          Sauces: ${{ parameters.sauces }}
+          Toppings: ${{ parameters.toppings }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for vegan burger order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Vegan Burger Order'

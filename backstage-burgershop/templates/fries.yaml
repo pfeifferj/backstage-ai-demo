@@ -1,0 +1,65 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-fries
+  title: Order Fries
+  description: Create an order for fries with customizable size and sauces.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Fries Order Configuration
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          title: Size
+          enum:
+            - small
+            - medium
+            - large
+          description: Choose the size of the fries.
+        sauces:
+          type: array
+          title: Sauces
+          items:
+            type: string
+          description: Choose your favorite sauces for the fries.
+          enum:
+            - ketchup
+            - mayonnaise
+            - barbecue
+          enumNames:
+            - Ketchup
+            - Mayonnaise
+            - Barbecue
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: fries-order-${{ parameters.size }}
+        repoDescription: 'Fries order with size and sauces'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Fries Size: ${{ parameters.size }}
+          Sauces: ${{ parameters.sauces }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for fries order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Fries Order'

@@ -1,0 +1,65 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-chicken-nuggets
+  title: Order Chicken Nuggets
+  description: Create an order for chicken nuggets with customizable quantity and sauces.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Chicken Nuggets Order Configuration
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          title: Quantity
+          description: Number of chicken nuggets.
+          minimum: 4
+          maximum: 20
+        sauces:
+          type: array
+          title: Sauces
+          description: Choose sauces to accompany the chicken nuggets.
+          items:
+            type: string
+          enum:
+            - ketchup
+            - barbecue
+            - sweet and sour
+            - honey mustard
+          enumNames:
+            - Ketchup
+            - Barbecue
+            - Sweet and Sour
+            - Honey Mustard
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: chicken-nuggets-order-${{ parameters.quantity }}
+        repoDescription: 'Chicken nuggets order with quantity and sauces'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Chicken Nuggets Quantity: ${{ parameters.quantity }}
+          Sauces: ${{ parameters.sauces }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for chicken nuggets order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Chicken Nuggets Order'

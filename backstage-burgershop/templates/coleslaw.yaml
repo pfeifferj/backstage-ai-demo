@@ -1,0 +1,65 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-coleslaw
+  title: Order Coleslaw
+  description: Create an order for coleslaw with customizable size and ingredients.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Coleslaw Order Configuration
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          title: Size
+          description: Choose the size of the coleslaw.
+          enum:
+            - small
+            - medium
+            - large
+        extras:
+          type: array
+          title: Extras
+          description: Choose extra ingredients for coleslaw.
+          items:
+            type: string
+          enum:
+            - raisins
+            - pineapple
+            - carrot
+          enumNames:
+            - Raisins
+            - Pineapple
+            - Carrot
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: coleslaw-order-${{ parameters.size }}
+        repoDescription: 'Coleslaw order with size and extras'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Coleslaw Size: ${{ parameters.size }}
+          Extras: ${{ parameters.extras }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for coleslaw order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Coleslaw Order'

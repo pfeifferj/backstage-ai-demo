@@ -1,0 +1,63 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-mozzarella-sticks
+  title: Order Mozzarella Sticks
+  description: Create an order for mozzarella sticks with customizable quantity and dipping sauces.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Mozzarella Sticks Order Configuration
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          title: Quantity
+          description: Choose the number of mozzarella sticks.
+          minimum: 4
+          maximum: 12
+        sauces:
+          type: array
+          title: Dipping Sauces
+          description: Choose dipping sauces for the mozzarella sticks.
+          items:
+            type: string
+          enum:
+            - marinara
+            - ranch
+            - barbecue
+          enumNames:
+            - Marinara
+            - Ranch
+            - Barbecue
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: mozzarella-sticks-order-${{ parameters.quantity }}
+        repoDescription: 'Mozzarella sticks order with quantity and dipping sauces'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Quantity: ${{ parameters.quantity }}
+          Dipping Sauces: ${{ parameters.sauces }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for mozzarella sticks order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Mozzarella Sticks Order'

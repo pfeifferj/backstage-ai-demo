@@ -1,0 +1,78 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-soda
+  title: Order Soda
+  description: Create an order for soda with customizable flavor, size, and additional options.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Soda Order Configuration
+      required:
+        - flavor
+        - size
+      properties:
+        flavor:
+          type: string
+          title: Flavor
+          description: Choose the soda flavor.
+          enum:
+            - cola
+            - lemon-lime
+            - orange
+            - root beer
+          enumNames:
+            - Cola
+            - Lemon-Lime
+            - Orange
+            - Root Beer
+        size:
+          type: string
+          title: Size
+          description: Select the soda size.
+          enum:
+            - small
+            - medium
+            - large
+        ice:
+          type: boolean
+          title: Add Ice
+          description: Whether to include ice in the soda.
+          default: true
+        extra_sugar:
+          type: boolean
+          title: Extra Sugar
+          description: Whether to add extra sugar to the soda.
+          default: false
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: soda-order-${{ parameters.flavor }}-${{ parameters.size }}
+        repoDescription: 'Soda order with flavor, size, and additional options'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Flavor: ${{ parameters.flavor }}
+          Size: ${{ parameters.size }}
+          Ice: ${{ parameters.ice }}
+          Extra Sugar: ${{ parameters.extra_sugar }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for soda order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Soda Order'

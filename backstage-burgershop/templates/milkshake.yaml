@@ -1,0 +1,66 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-milkshake
+  title: Order Milkshake
+  description: Create an order for milkshake with customizable flavors and size.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Milkshake Order Configuration
+      required:
+        - flavor
+        - size
+      properties:
+        flavor:
+          type: string
+          title: Flavor
+          description: Choose the flavor of the milkshake.
+          enum:
+            - chocolate
+            - vanilla
+            - strawberry
+            - banana
+          enumNames:
+            - Chocolate
+            - Vanilla
+            - Strawberry
+            - Banana
+        size:
+          type: string
+          title: Size
+          description: Select the milkshake size.
+          enum:
+            - small
+            - medium
+            - large
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: milkshake-order-${{ parameters.flavor }}-${{ parameters.size }}
+        repoDescription: 'Milkshake order with flavor and size'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Milkshake Flavor: ${{ parameters.flavor }}
+          Milkshake Size: ${{ parameters.size }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for milkshake order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Milkshake Order'

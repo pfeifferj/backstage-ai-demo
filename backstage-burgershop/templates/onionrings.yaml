@@ -1,0 +1,65 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-onion-rings
+  title: Order Onion Rings
+  description: Create an order for onion rings with customizable size and sauces.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Onion Rings Order Configuration
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          title: Size
+          description: Choose the size of the onion rings.
+          enum:
+            - small
+            - medium
+            - large
+        sauces:
+          type: array
+          title: Sauces
+          description: Choose sauces to accompany the onion rings.
+          items:
+            type: string
+          enum:
+            - ketchup
+            - barbecue
+            - sweet and sour
+          enumNames:
+            - Ketchup
+            - Barbecue
+            - Sweet and Sour
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: onion-rings-order-${{ parameters.size }}
+        repoDescription: 'Onion rings order with size and sauces'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Onion Rings Size: ${{ parameters.size }}
+          Sauces: ${{ parameters.sauces }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for onion rings order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Onion Rings Order'

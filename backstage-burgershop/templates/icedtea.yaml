@@ -1,0 +1,78 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-iced-tea
+  title: Order Iced Tea
+  description: Create an order for iced tea with customizable flavor, size, and additional options.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Iced Tea Order Configuration
+      required:
+        - flavor
+        - size
+      properties:
+        flavor:
+          type: string
+          title: Flavor
+          description: Choose the iced tea flavor.
+          enum:
+            - lemon
+            - peach
+            - raspberry
+            - plain
+          enumNames:
+            - Lemon
+            - Peach
+            - Raspberry
+            - Plain
+        size:
+          type: string
+          title: Size
+          description: Select the iced tea size.
+          enum:
+            - small
+            - medium
+            - large
+        ice:
+          type: boolean
+          title: Add Ice
+          description: Whether to include ice.
+          default: true
+        sweetened:
+          type: boolean
+          title: Sweetened
+          description: Whether the iced tea is sweetened.
+          default: false
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: iced-tea-order-${{ parameters.flavor }}-${{ parameters.size }}
+        repoDescription: 'Iced tea order with flavor, size, and additional options'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Flavor: ${{ parameters.flavor }}
+          Size: ${{ parameters.size }}
+          Ice: ${{ parameters.ice }}
+          Sweetened: ${{ parameters.sweetened }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for iced tea order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Iced Tea Order'

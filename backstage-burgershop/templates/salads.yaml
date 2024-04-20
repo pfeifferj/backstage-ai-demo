@@ -1,0 +1,93 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-salad
+  title: Order Salad
+  description: Create an order for salad with customizable ingredients, dressings, and size.
+spec:
+  owner: kitchen
+  type: service
+  parameters:
+    - title: Salad Order Configuration
+      required:
+        - base
+      properties:
+        base:
+          type: string
+          title: Salad Base
+          description: Choose the base for the salad.
+          enum:
+            - lettuce
+            - spinach
+            - kale
+          enumNames:
+            - Lettuce
+            - Spinach
+            - Kale
+        dressings:
+          type: array
+          title: Dressings
+          description: Choose dressings for the salad.
+          items:
+            type: string
+          enum:
+            - ranch
+            - vinaigrette
+            - caesar
+          enumNames:
+            - Ranch
+            - Vinaigrette
+            - Caesar
+        toppings:
+          type: array
+          title: Toppings
+          description: Choose toppings for the salad.
+          items:
+            type: string
+          enum:
+            - cheese
+            - croutons
+            - chicken
+          enumNames:
+            - Cheese
+            - Croutons
+            - Chicken
+        size:
+          type: string
+          title: Size
+          description: Choose the salad size.
+          enum:
+            - small
+            - medium
+            - large
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: salad-order-${{ parameters.base }}-${{ parameters.size }}
+        repoDescription: 'Salad order with base, dressings, and toppings'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Salad Base: ${{ parameters.base }}
+          Salad Size: ${{ parameters.size }}
+          Dressings: ${{ parameters.dressings }}
+          Toppings: ${{ parameters.toppings }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for salad order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Salad Order'
