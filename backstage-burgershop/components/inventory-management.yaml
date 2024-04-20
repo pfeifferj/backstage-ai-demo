@@ -1,0 +1,28 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: inventory-management
+  description: Manages inventory levels and integrates with supplier ordering systems.
+  tags:
+    - java
+    - database
+  links:
+    - url: https://example.com/docs/inventory-management
+      title: Documentation
+      icon: book
+    - url: https://example.com/inventory
+      title: Inventory Dashboard
+      icon: storage
+    - url: https://example.com/suppliers
+      title: Supplier Integration
+      icon: sync
+  annotations:
+    backstage.io/tech-stack: java-spring
+    backstage.io/documentation: 'https://github.com/acme-burger/inventory-management'
+spec:
+  type: service
+  lifecycle: production
+  owner: inventory-team
+  system: supply-chain-system
+  dependsOn: []
+  apiConsumedBy: ['component:order-placement']

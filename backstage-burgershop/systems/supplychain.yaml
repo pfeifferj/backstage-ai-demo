@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: supply-chain-system
+  description: Manages all supply chain operations of the burger shop, including inventory, supplier coordination, and order fulfillment.
+  tags:
+    - supply-chain
+    - inventory
+    - logistics
+spec:
+  owner: management-team

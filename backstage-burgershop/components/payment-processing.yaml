@@ -1,0 +1,28 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: payment-processing
+  description: Component for secure handling of payment transactions.
+  tags:
+    - python
+    - security
+  links:
+    - url: https://example.com/docs/payment-processing
+      title: Documentation
+      icon: book
+    - url: https://example.com/payments
+      title: Payment Interface
+      icon: credit_card
+    - url: https://example.com/security
+      title: Security Standards
+      icon: security
+  annotations:
+    backstage.io/tech-stack: python-flask
+    backstage.io/documentation: 'https://github.com/acme-burger/payment-processing'
+spec:
+  type: service
+  lifecycle: production
+  owner: management-team
+  system: financial-system
+  dependsOn: ['component:order-placement']
+  apiConsumedBy: ['component:order-placement']

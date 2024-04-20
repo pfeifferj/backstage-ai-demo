@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: burgershop-apis
+  description: A collection of all burgershop APIs
+spec:
+  targets:
+    - ./apis/inventory-api.yaml
+    - ./apis/order-api.yaml
+    - ./apis/payment-api.yaml
+    

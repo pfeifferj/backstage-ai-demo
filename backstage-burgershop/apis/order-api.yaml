@@ -1,0 +1,42 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: order-management-api
+  description: API to manage customer orders from placement to delivery.
+spec:
+  type: grpc
+  lifecycle: active
+  owner: kitchen-staff
+  definition: |
+    syntax = "proto3";
+    
+    package orders;
+
+    service OrderService {
+      // Places a new order
+      rpc PlaceOrder (OrderRequest) returns (OrderResponse) {}
+      // Updates an existing order
+      rpc UpdateOrder (UpdateOrderRequest) returns (OrderResponse) {}
+    }
+
+    message OrderRequest {
+      string customerId = 1;
+      repeated MenuItem items = 2;
+      string deliveryAddress = 3;
+    }
+
+    message UpdateOrderRequest {
+      string orderId = 1;
+      repeated MenuItem items = 2;
+    }
+
+    message OrderResponse {
+      bool success = 1;
+      string orderId = 2;
+      string status = 3;
+    }
+
+    message MenuItem {
+      string itemId = 1;
+      int32 quantity = 2;
+    }

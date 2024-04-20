@@ -1,0 +1,33 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: acme-burger-corp
+  description: The acme-burger-corp organization oversees all burger shop operations, including customer service, kitchen operations, and inventory management.
+  links:
+    - url: http://www.acme-burger.com/
+      title: Website
+    - url: https://acme-burger.intranet/
+      title: Intranet
+spec:
+  type: organization
+  profile:
+    displayName: ACME Burger Corp
+    email: info@acme-burger.com
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=BurgerCorp&flip=true&backgroundColor=ffdfbf
+  children:
+    - management-team
+    - customer-service-team
+    - kitchen-staff
+    - inventory-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: acme-burger-groups
+  description: A collection of all ACME Burger Corp Groups including management, kitchen, customer service, and inventory.
+spec:
+  targets:
+    - ./team-customer-service.yaml
+    - ./team-inventory.yaml
+    - ./team-kitchen.yaml
+    - ./team-management.yaml

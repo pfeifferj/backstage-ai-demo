@@ -1,0 +1,35 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: customer-service-team
+  description: Customer Service Team handles all customer interactions and support issues.
+spec:
+  type: team
+  profile:
+    email: customer-service@example.com
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=Service&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4
+  parent: backstage
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: samantha.bright
+spec:
+  profile:
+    displayName: Samantha Bright
+    email: samantha-bright@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Sunshine&backgroundColor=transparent
+  memberOf: [customer-service-team]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: ethan.hunter
+spec:
+  profile:
+    displayName: Ethan Hunter
+    email: ethan-hunter@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Hunter&backgroundColor=transparent
+  memberOf: [customer-service-team]
+---

@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: payment-api
+  description: API to handle secure payment transactions.
+spec:
+  type: grpc
+  lifecycle: active
+  owner: management-team
+  definition: |
+    syntax = "proto3";
+    
+    package payment;
+
+    service PaymentService {
+      // Processes payment
+      rpc ProcessPayment (PaymentRequest) returns (PaymentResponse) {}
+    }
+
+    message PaymentRequest {
+      string creditCardNumber = 1;
+      string cvv = 2;
+      string expirationDate = 3;
+      double amount = 4;
+    }
+
+    message PaymentResponse {
+      bool success = 1;
+      string transactionId = 2;
+      string message = 3;
+    }

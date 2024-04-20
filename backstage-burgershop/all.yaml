@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: burgershop-all
+  description: A collection of all burgershop entities
+spec:
+  targets:
+    - ./all-apis.yaml
+    - ./all-components.yaml
+    - ./all-resources.yaml
+    - ./all-systems.yaml
+    - ./burgershop.yaml

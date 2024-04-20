@@ -1,0 +1,49 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: management-team
+  description: Management Team oversees operations, staff, and business strategy, and analyzes reports for decision making.
+spec:
+  type: team
+  profile:
+    email: management-team@example.com
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=Management&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4
+  parent: backstage
+  children:
+    - customer-service-team
+    - kitchen-staff
+    - inventory-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: isabella.johnson
+spec:
+  profile:
+    displayName: Isabella Johnson
+    email: isabella-johnson@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Leader&backgroundColor=transparent
+  memberOf: [management-team]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: lucas.williams
+spec:
+  profile:
+    displayName: Lucas Williams
+    email: lucas-williams@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Director&backgroundColor=transparent
+  memberOf: [management-team]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: sophia.brown
+spec:
+  profile:
+    displayName: Sophia Brown
+    email: sophia-brown@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Manager&backgroundColor=transparent
+  memberOf: [management-team]
+---

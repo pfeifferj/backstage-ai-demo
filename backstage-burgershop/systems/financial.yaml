@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: financial-system
+  description: Manages all financial operations of the burger shop, including payments, payroll, and financial reporting.
+  tags:
+    - finance
+    - payments
+    - payroll
+spec:
+  owner: management-team

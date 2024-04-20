@@ -1,0 +1,28 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: order-placement
+  description: Component for handling customer order placements.
+  tags:
+    - nodejs
+    - backend
+  links:
+    - url: https://example.com/docs/order-placement
+      title: Documentation
+      icon: book
+    - url: https://example.com/order-system
+      title: Order System Interface
+      icon: dashboard
+    - url: https://example.com/support
+      title: Support
+      icon: help
+  annotations:
+    backstage.io/tech-stack: nodejs-express
+    backstage.io/documentation: 'https://github.com/acme-burger/order-placement'
+spec:
+  type: service
+  lifecycle: production
+  owner: customer-service-team
+  system: order-management-system
+  dependsOn: ['component:payment-processing']
+  apiConsumedBy: ['component:customer-interface']

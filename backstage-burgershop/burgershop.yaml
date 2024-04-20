@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: acme-burger-corp
+  description: A collection of all burgershop Groups
+spec:
+  targets:
+    - ./burgershop/org.yaml

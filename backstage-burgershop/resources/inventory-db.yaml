@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: inventory-db
+  description: Stores inventory details, including food items, quantities, and supplier information.
+spec:
+  type: database
+  owner: inventory-team
+  system: supply-chain-system

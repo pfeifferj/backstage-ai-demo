@@ -1,0 +1,43 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: inventory-management-api
+  description: API for inventory tracking and automated reordering.
+spec:
+  type: grpc
+  lifecycle: active
+  owner: inventory-team
+  definition: |
+    syntax = "proto3";
+    
+    package inventory;
+
+    service InventoryService {
+      // Checks inventory levels
+      rpc CheckInventory (InventoryRequest) returns (InventoryResponse) {}
+      // Automatically reorders stock
+      rpc ReorderStock (ReorderRequest) returns (ReorderResponse) {}
+    }
+
+    message InventoryRequest {
+      repeated string itemIds = 1;
+    }
+
+    message InventoryResponse {
+      repeated ItemStatus items = 1;
+    }
+
+    message ReorderRequest {
+      string itemId = 1;
+      int32 quantity = 2;
+    }
+
+    message ReorderResponse {
+      bool success = 1;
+      string message = 2;
+    }
+
+    message ItemStatus {
+      string itemId = 1;
+      int32 currentStock = 2;
+    }
