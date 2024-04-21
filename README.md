@@ -1,11 +1,16 @@
 # Backstage AI Recommendations Demo
 
+## About this Project
+
+[Start here](docs/index.md)
+
 ## Quickstart
 
 ### Prerequisites
 
 - An OpenShift cluster
 - OpenShift GitOps operator
+- GitLab Operator
 
 _These items can be substituted with upstream projects, however the code contained in this repo was only tested on this setup_
 
