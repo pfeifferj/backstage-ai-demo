@@ -5,8 +5,8 @@ metadata:
   title: Order Fries
   description: Create an order for fries with customizable size and sauces.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: side
   parameters:
     - title: Fries Order Configuration
       required:
@@ -23,17 +23,19 @@ spec:
         sauces:
           type: array
           title: Sauces
+           description: Choose your favorite sauces for the fries.
           items:
-            type: string
-          description: Choose your favorite sauces for the fries.
-          enum:
-            - ketchup
-            - mayonnaise
-            - barbecue
-          enumNames:
-            - Ketchup
-            - Mayonnaise
-            - Barbecue
+            type: string 
+            enum:
+              - ketchup
+              - mayonnaise
+              - barbecue
+            enumNames:
+              - Ketchup
+              - Mayonnaise
+              - Barbecue
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

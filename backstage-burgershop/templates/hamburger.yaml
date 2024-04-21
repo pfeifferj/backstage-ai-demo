@@ -1,21 +1,21 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: order-onion-rings
-  title: Order Onion Rings
-  description: Create an order for onion rings with customizable size and sauces.
+  name: order-hamburger
+  title: Order Hamburger
+  description: Create an order for a hamburger with customizable size, sauces, and toppings.
 spec:
   owner: kitchen-team
-  type: side
+  type: main
   parameters:
-    - title: Onion Rings Order Configuration
+    - title: Hamburger Order Configuration
       required:
         - size
       properties:
         size:
           type: string
           title: Size
-          description: Choose the size of the onion rings.
+          description: Choose the size of the hamburger.
           enum:
             - small
             - medium
@@ -23,17 +23,35 @@ spec:
         sauces:
           type: array
           title: Sauces
-          description: Choose sauces to accompany the onion rings.
+          description: Choose sauces for the hamburger.
           items:
             type: string
             enum:
               - ketchup
-              - barbecue
-              - sweet and sour
+              - mustard
+              - mayonnaise
             enumNames:
               - Ketchup
-              - Barbecue
-              - Sweet and Sour
+              - Mustard
+              - Mayonnaise
+          uniqueItems: true
+          ui:widget: checkboxes
+        toppings:
+          type: array
+          title: Toppings
+          description: Choose toppings for the hamburger.
+          items:
+            type: string
+            enum:
+              - lettuce
+              - tomato
+              - onion
+              - pickle
+            enumNames:
+              - Lettuce
+              - Tomato
+              - Onion
+              - Pickle
           uniqueItems: true
           ui:widget: checkboxes
   steps:
@@ -41,8 +59,8 @@ spec:
       name: Create Git Repository
       action: git:createRepository
       input:
-        repoName: onion-rings-order-${{ parameters.size }}
-        repoDescription: 'Onion rings order with size and sauces'
+        repoName: hamburger-order-${{ parameters.size }}
+        repoDescription: 'Hamburger order with size, sauces, and toppings'
         repoVisibility: private
         owner: '{{owner}}'
     - id: write-order-file
@@ -51,8 +69,9 @@ spec:
       input:
         targetPath: 'order.txt'
         content: |
-          Onion Rings Size: ${{ parameters.size }}
+          Hamburger Size: ${{ parameters.size }}
           Sauces: ${{ parameters.sauces }}
+          Toppings: ${{ parameters.toppings }}
     - id: commit-order-file
       name: Commit and Push Order File
       action: git:commitAndPush
@@ -60,8 +79,8 @@ spec:
         repoRef: ${{ steps['create-git-repo'].output.repoRef }}
         files:
           - order.txt
-        commitMessage: 'Initial commit for onion rings order'
+        commitMessage: 'Initial commit for hamburger order'
   output:
     links:
       - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Onion Rings Order'
+        title: 'Git Repository for Hamburger Order'

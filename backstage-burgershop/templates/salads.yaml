@@ -5,8 +5,8 @@ metadata:
   title: Order Salad
   description: Create an order for salad with customizable ingredients, dressings, and size.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: side
   parameters:
     - title: Salad Order Configuration
       required:
@@ -44,14 +44,16 @@ spec:
           description: Choose toppings for the salad.
           items:
             type: string
-          enum:
-            - cheese
-            - croutons
-            - chicken
-          enumNames:
-            - Cheese
-            - Croutons
-            - Chicken
+            enum:
+              - cheese
+              - croutons
+              - chicken
+            enumNames:
+              - Cheese
+              - Croutons
+              - Chicken
+          uniqueItems: true
+          ui:widget: checkboxes
         size:
           type: string
           title: Size

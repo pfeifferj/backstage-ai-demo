@@ -5,8 +5,8 @@ metadata:
   title: Order Cheeseburger
   description: Create an order for cheeseburger with customizable size, sauces, and toppings.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: main
   parameters:
     - title: Cheeseburger Order Configuration
       required:
@@ -23,33 +23,37 @@ spec:
         sauces:
           type: array
           title: Sauces
+          description: Choose your favorite sauces for the cheeseburger.
           items:
             type: string
-          description: Choose your favorite sauces for the cheeseburger.
-          enum:
-            - ketchup
-            - mustard
-            - mayonnaise
-          enumNames:
-            - Ketchup
-            - Mustard
-            - Mayonnaise
+            enum:
+              - ketchup
+              - mustard
+              - mayonnaise
+            enumNames:
+              - Ketchup
+              - Mustard
+              - Mayonnaise
+          uniqueItems: true
+          ui:widget: checkboxes 
         extras:
           type: array
           title: Toppings/Extras
           description: Additional toppings or extras for the cheeseburger.
           items:
             type: string
-          enum:
-            - lettuce
-            - tomato
-            - bacon
-            - cheese
-          enumNames:
-            - Lettuce
-            - Tomato
-            - Bacon
-            - Cheese
+            enum:
+              - lettuce
+              - tomato
+              - bacon
+              - cheese
+            enumNames:
+              - Lettuce
+              - Tomato
+              - Bacon
+              - Cheese
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

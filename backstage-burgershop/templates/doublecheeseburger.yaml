@@ -5,8 +5,8 @@ metadata:
   title: Order Double Cheeseburger
   description: Create an order for double cheeseburger with customizable size, sauces, and toppings.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: main
   parameters:
     - title: Double Cheeseburger Order Configuration
       required:
@@ -25,30 +25,34 @@ spec:
           description: Choose sauces for the double cheeseburger.
           items:
             type: string
-          enum:
-            - ketchup
-            - mayonnaise
-            - mustard
-          enumNames:
-            - Ketchup
-            - Mayonnaise
-            - Mustard
+            enum:
+              - ketchup
+              - mayonnaise
+              - mustard
+            enumNames:
+              - Ketchup
+              - Mayonnaise
+              - Mustard
+          uniqueItems: true
+          ui:widget: checkboxes
         toppings:
           type: array
           title: Toppings
           description: Choose toppings for the double cheeseburger.
           items:
             type: string
-          enum:
-            - lettuce
-            - tomato
-            - onion
-            - bacon
-          enumNames:
-            - Lettuce
-            - Tomato
-            - Onion
-            - Bacon
+            enum:
+              - lettuce
+              - tomato
+              - onion
+              - bacon
+            enumNames:
+              - Lettuce
+              - Tomato
+              - Onion
+              - Bacon
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

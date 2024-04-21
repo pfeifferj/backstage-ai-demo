@@ -18,3 +18,5 @@ spec:
     - ./templates/icedtea.yaml
     - ./templates/doublecheeseburger.yaml
     - ./templates/coleslaw.yaml
+    - ./templates/chickenburger.yaml
+    - ./templates/hamburger.yaml

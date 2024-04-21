@@ -5,8 +5,8 @@ metadata:
   title: Order Milkshake
   description: Create an order for milkshake with customizable flavors and size.
 spec:
-  owner: kitchen
-  type: service
+  owner: customer-service-team
+  type: drink
   parameters:
     - title: Milkshake Order Configuration
       required:

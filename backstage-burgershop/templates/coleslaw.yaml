@@ -5,8 +5,8 @@ metadata:
   title: Order Coleslaw
   description: Create an order for coleslaw with customizable size and ingredients.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: side
   parameters:
     - title: Coleslaw Order Configuration
       required:
@@ -26,14 +26,16 @@ spec:
           description: Choose extra ingredients for coleslaw.
           items:
             type: string
-          enum:
-            - raisins
-            - pineapple
-            - carrot
-          enumNames:
-            - Raisins
-            - Pineapple
-            - Carrot
+            enum:
+              - raisins
+              - pineapple
+              - carrot
+            enumNames:
+              - Raisins
+              - Pineapple
+              - Carrot
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

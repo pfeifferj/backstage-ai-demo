@@ -5,8 +5,8 @@ metadata:
   title: Order Mozzarella Sticks
   description: Create an order for mozzarella sticks with customizable quantity and dipping sauces.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: side
   parameters:
     - title: Mozzarella Sticks Order Configuration
       required:
@@ -15,7 +15,7 @@ spec:
         quantity:
           type: integer
           title: Quantity
-          description: Choose the number of mozzarella sticks.
+          description: Choose the number of mozzarella sticks (4 or 12).
           minimum: 4
           maximum: 12
         sauces:
@@ -24,14 +24,16 @@ spec:
           description: Choose dipping sauces for the mozzarella sticks.
           items:
             type: string
-          enum:
-            - marinara
-            - ranch
-            - barbecue
-          enumNames:
-            - Marinara
-            - Ranch
-            - Barbecue
+            enum:
+              - marinara
+              - ranch
+              - barbecue
+            enumNames:
+              - Marinara
+              - Ranch
+              - Barbecue
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

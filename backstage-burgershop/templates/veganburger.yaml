@@ -5,8 +5,8 @@ metadata:
   title: Order Vegan Burger
   description: Create an order for a vegan burger with customizable size, sauces, and toppings.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: main
   parameters:
     - title: Vegan Burger Order Configuration
       required:
@@ -26,28 +26,32 @@ spec:
           description: Choose sauces for the vegan burger.
           items:
             type: string
-          enum:
-            - ketchup
-            - mustard
-            - vegan mayonnaise
-          enumNames:
-            - Ketchup
-            - Mustard
-            - Vegan Mayonnaise
+            enum:
+              - ketchup
+              - mustard
+              - vegan mayonnaise
+            enumNames:
+              - Ketchup
+              - Mustard
+              - Vegan Mayonnaise
+          uniqueItems: true
+          ui:widget: checkboxes
         toppings:
           type: array
           title: Toppings
           description: Choose toppings for the vegan burger.
           items:
             type: string
-          enum:
-            - lettuce
-            - tomato
-            - vegan cheese
-          enumNames:
-            - Lettuce
-            - Tomato
-            - Vegan Cheese
+            enum:
+              - lettuce
+              - tomato
+              - vegan cheese
+            enumNames:
+              - Lettuce
+              - Tomato
+              - Vegan Cheese
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

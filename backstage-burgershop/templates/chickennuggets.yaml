@@ -5,8 +5,8 @@ metadata:
   title: Order Chicken Nuggets
   description: Create an order for chicken nuggets with customizable quantity and sauces.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: side
   parameters:
     - title: Chicken Nuggets Order Configuration
       required:
@@ -24,16 +24,18 @@ spec:
           description: Choose sauces to accompany the chicken nuggets.
           items:
             type: string
-          enum:
-            - ketchup
-            - barbecue
-            - sweet and sour
-            - honey mustard
-          enumNames:
-            - Ketchup
-            - Barbecue
-            - Sweet and Sour
-            - Honey Mustard
+            enum:
+              - ketchup
+              - barbecue
+              - sweet and sour
+              - honey mustard
+            enumNames:
+              - Ketchup
+              - Barbecue
+              - Sweet and Sour
+              - Honey Mustard
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository

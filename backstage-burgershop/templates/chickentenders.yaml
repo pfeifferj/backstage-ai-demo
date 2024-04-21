@@ -5,8 +5,8 @@ metadata:
   title: Order Chicken Tenders
   description: Create an order for chicken tenders with customizable quantity and sauces.
 spec:
-  owner: kitchen
-  type: service
+  owner: kitchen-team
+  type: side
   parameters:
     - title: Chicken Tenders Order Configuration
       required:
@@ -24,14 +24,16 @@ spec:
           description: Choose sauces for the chicken tenders.
           items:
             type: string
-          enum:
-            - barbecue
-            - honey mustard
-            - ranch
-          enumNames:
-            - Barbecue
-            - Honey Mustard
-            - Ranch
+            enum:
+              - barbecue
+              - honey mustard
+              - ranch
+            enumNames:
+              - Barbecue
+              - Honey Mustard
+              - Ranch
+          uniqueItems: true
+          ui:widget: checkboxes
   steps:
     - id: create-git-repo
       name: Create Git Repository
