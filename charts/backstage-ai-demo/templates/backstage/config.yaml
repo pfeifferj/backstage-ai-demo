@@ -1,0 +1,37 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: app-config-rhdh
+  namespace: rhdh-operator
+data:
+  app-config-rhdh.yaml: |
+    app:
+      title: Red Hat Developer Hub
+    catalog:
+      rules:
+        - allow:
+          - User
+          - Group
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: developer-hub-dynamic-plugins
+  namespace: rhdh-operator
+  labels:
+    app.kubernetes.io/instance: developer-hub
+    app.kubernetes.io/name: backstage
+    rhdh.redhat.com/app: backstage-developer-hub
+  ownerReferences:
+    - apiVersion: rhdh.redhat.com/v1alpha1
+      kind: Backstage
+      name: developer-hub
+      controller: true
+      blockOwnerDeletion: true
+data:
+  dynamic-plugins.yaml: |
+    includes:
+      - dynamic-plugins.default.yaml
+    plugins: []
+---

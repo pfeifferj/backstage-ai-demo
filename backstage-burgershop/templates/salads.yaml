@@ -16,28 +16,29 @@ spec:
           type: string
           title: Salad Base
           description: Choose the base for the salad.
-          enum:
-            - lettuce
-            - spinach
-            - kale
-          enumNames:
-            - Lettuce
-            - Spinach
-            - Kale
+          items:
+            enum:
+              - lettuce
+              - spinach
+              - kale
+            enumNames:
+              - Lettuce
+              - Spinach
+              - Kale
         dressings:
-          type: array
+          type: string
           title: Dressings
           description: Choose dressings for the salad.
           items:
             type: string
-          enum:
-            - ranch
-            - vinaigrette
-            - caesar
-          enumNames:
-            - Ranch
-            - Vinaigrette
-            - Caesar
+            enum:
+              - ranch
+              - vinaigrette
+              - caesar
+            enumNames:
+              - Ranch
+              - Vinaigrette
+              - Caesar
         toppings:
           type: array
           title: Toppings

@@ -23,7 +23,7 @@ spec:
         sauces:
           type: array
           title: Sauces
-           description: Choose your favorite sauces for the fries.
+          description: Choose your favorite sauces for the fries.
           items:
             type: string 
             enum:

@@ -1,0 +1,89 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: order-chicken-burger
+  title: Order Chicken Burger
+  description: Create an order for a chicken burger with customizable size, sauces, and toppings.
+spec:
+  owner: kitchen-team
+  type: main
+  parameters:
+    - title: Chicken Burger Order Configuration
+      required:
+        - size
+      properties:
+        size:
+          type: string
+          title: Size
+          description: Choose the size of the chicken burger.
+          enum:
+            - small
+            - medium
+            - large
+        sauces:
+          type: array
+          title: Sauces
+          description: Choose sauces for the chicken burger.
+          items:
+            type: string
+            enum:
+              - mayonnaise
+              - ketchup
+              - barbecue
+              - honey mustard
+            enumNames:
+              - Mayonnaise
+              - Ketchup
+              - Barbecue
+              - Honey Mustard
+
+          uniqueItems: true
+          ui:widget: checkboxes    
+        toppings:
+          type: array
+          title: Toppings
+          description: Choose toppings for the chicken burger.
+          items:
+            type: string
+            enum:
+              - lettuce
+              - tomato
+              - onion
+              - cheese
+            enumNames:
+              - Lettuce
+              - Tomato
+              - Onion
+              - Cheese
+          uniqueItems: true
+          ui:widget: checkboxes
+  steps:
+    - id: create-git-repo
+      name: Create Git Repository
+      action: git:createRepository
+      input:
+        repoName: chicken-burger-order-${{ parameters.size }}
+        repoDescription: 'Chicken burger order with size, sauces, and toppings'
+        repoVisibility: private
+        owner: '{{owner}}'
+    - id: write-order-file
+      name: Write Order File
+      action: file:write
+      input:
+        targetPath: 'order.txt'
+        content: |
+          Chicken Burger Size: ${{ parameters.size }}
+          Sauces: ${{ parameters.sauces }}
+          Toppings: ${{ parameters.toppings }}
+    - id: commit-order-file
+      name: Commit and Push Order File
+      action: git:commitAndPush
+      input:
+        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
+        files:
+          - order.txt
+        commitMessage: 'Initial commit for chicken burger order'
+  output:
+    links:
+      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
+        title: 'Git Repository for Chicken Burger Order'
