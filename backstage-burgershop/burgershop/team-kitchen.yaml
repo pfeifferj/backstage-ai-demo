@@ -1,0 +1,35 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: kitchen-staff
+  description: Kitchen Staff prepares and manages food orders, ensuring quality and food safety standards.
+spec:
+  type: team
+  profile:
+    email: kitchen-staff@example.com
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=Chef&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4
+  parent: backstage
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: olivia.smith
+spec:
+  profile:
+    displayName: Olivia Smith
+    email: olivia-smith@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Cook&backgroundColor=transparent
+  memberOf: [kitchen-staff]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: jack.peterson
+spec:
+  profile:
+    displayName: Jack Peterson
+    email: jack-peterson@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Chef&backgroundColor=transparent
+  memberOf: [kitchen-staff]
+---

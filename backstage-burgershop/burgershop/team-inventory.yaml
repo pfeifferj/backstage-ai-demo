@@ -1,0 +1,35 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: inventory-team
+  description: Inventory Team manages stock levels and coordinates with suppliers for restocking.
+spec:
+  type: team
+  profile:
+    email: inventory-team@example.com
+    picture: https://api.dicebear.com/7.x/identicon/svg?seed=Inventory&backgroundType=solid,gradientLinear&backgroundColor=ffd5dc,b6e3f4
+  parent: backstage
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: mia.thompson
+spec:
+  profile:
+    displayName: Mia Thompson
+    email: mia-thompson@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Stock&backgroundColor=transparent
+  memberOf: [inventory-team]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: noah.jones
+spec:
+  profile:
+    displayName: Noah Jones
+    email: noah-jones@example.com
+    picture: https://api.dicebear.com/7.x/avataaars/svg?seed=Supply&backgroundColor=transparent
+  memberOf: [inventory-team]
+---
