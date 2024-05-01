@@ -16,6 +16,12 @@ redis:
   name: redis
   node_port: 31164
 
+mock:
+  name: mock
+  image: quay.io/pfeifferj/mock
+  replicas: 1
+  tag: latest
+
 zombie:
   name: zombie
   image: quay.io/pfeifferj/zombie

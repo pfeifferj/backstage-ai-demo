@@ -1,0 +1,39 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+    name: {{ .Values.mock.name }}
+    namespace: {{ .Values.mock.namespace | default .Values.namespace }}
+spec:
+    lookupPolicy:
+        local: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.mock.name }}
+    namespace: {{ .Values.mock.namespace | default .Values.namespace }}
+    annotations:
+        alpha.image.policy.openshift.io/resolve-names: '*'
+        app.openshift.io/route-disabled: 'false'
+        image.openshift.io/triggers: |
+            [{ "from": { "kind": "ImageStreamTag", "name": "{{ .Values.mock.image }}:{{ .Values.mock.tag }}", "namespace": "{{ .Values.mock.namespace | default .Values.namespace }}" }, "fieldPath": "spec.template.spec.containers[?(@.name=='{{ .Values.mock.name }}')].image", "pause": "false" }]
+    labels:
+        app: {{ .Values.mock.name }}
+        app.kubernetes.io/component: {{ .Values.mock.name }}
+        app.kubernetes.io/instance: {{ .Values.mock.name }}
+        app.kubernetes.io/name: {{ .Values.mock.name }}
+        app.kubernetes.io/part-of: {{ .Values.mock.name }}
+spec:
+    replicas: {{ .Values.mock.replicas }}
+    selector:
+        matchLabels:
+            app: {{ .Values.mock.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.mock.name }}
+        spec:
+            containers:
+                - name: {{ .Values.mock.name }}
+                  image: '{{ .Values.mock.image }}:{{ .Values.mock.tag }}'
+            restartPolicy: Always
