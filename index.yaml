@@ -3,6 +3,16 @@ entries:
   backstage-ai-demo:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2024-05-01T16:04:34.47657353Z"
+    description: A Helm chart to showcase AI recommendations in backstage
+    digest: f98c995a67733fa635a898600a953a7d3528cc1898e331ef9d465f0c00694c3b
+    name: backstage-ai-demo
+    type: application
+    urls:
+    - https://github.com/pfeifferj/backstage-ai-demo/releases/download/backstage-ai-demo-0.1.4/backstage-ai-demo-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2024-05-01T15:56:20.231533913Z"
     description: A Helm chart to showcase AI recommendations in backstage
     digest: 369a31e1d74e38c64b4dc26cb09b11fd616ea1b382ca44a3fafe0891b98f0a85
@@ -41,4 +51,4 @@ entries:
     urls:
     - https://github.com/pfeifferj/backstage-ai-demo/releases/download/backstage-ai-demo-0.1.0/backstage-ai-demo-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-01T15:56:20.231557116Z"
+generated: "2024-05-01T16:04:34.476598657Z"
