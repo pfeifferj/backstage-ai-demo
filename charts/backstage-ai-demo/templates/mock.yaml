@@ -37,3 +37,52 @@ spec:
                 - name: {{ .Values.mock.name }}
                   image: '{{ .Values.mock.image }}:{{ .Values.mock.tag }}'
             restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.mock.name }}
+  namespace: {{ .Values.mock.namespace | default .Values.namespace }}
+  labels:
+    app: {{ .Values.mock.name }}
+    app.kubernetes.io/component: {{ .Values.mock.name }}
+    app.kubernetes.io/instance: {{ .Values.mock.name }}
+    app.kubernetes.io/name: {{ .Values.mock.name }}
+    app.kubernetes.io/part-of: {{ .Values.mock.name }}
+spec:
+  ports:
+    - name: 5000-tcp
+      protocol: TCP
+      port: 5000
+      targetPort: 5000
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  selector:
+    app: {{ .Values.mock.name }}
+    deployment: {{ .Values.mock.name }}
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Values.mock.name }}
+  namespace: {{ .Values.mock.namespace | default .Values.namespace }}
+  labels:
+    app: {{ .Values.mock.name }}
+    app.kubernetes.io/component: {{ .Values.mock.name }}
+    app.kubernetes.io/instance: {{ .Values.mock.name }}
+    app.kubernetes.io/name: {{ .Values.mock.name }}
+    app.kubernetes.io/part-of: {{ .Values.mock.name }}
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  host: {{ .Values.mock.name }}-{{ .Values.mock.namespace | default .Values.namespace }}.{{ .Values.cluster_url }}
+  to:
+    kind: Service
+    name: {{ .Values.mock.name }}
+    weight: 100
+  port:
+    targetPort: 5000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
