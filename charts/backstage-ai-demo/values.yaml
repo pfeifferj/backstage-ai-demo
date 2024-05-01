@@ -21,6 +21,7 @@ mock:
   image: quay.io/pfeifferj/mock
   replicas: 1
   tag: latest
+  port: 5000
 
 zombie:
   name: zombie
