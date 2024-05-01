@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: ['log-forwarding', 'zombie']
+        dir: ['log-forwarding', 'zombie', 'mock']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
