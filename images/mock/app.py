@@ -28,7 +28,12 @@ templates = [
 
 @app.route("/recommendations", methods=["GET"])
 def get_recommendations():
-    return jsonify(templates)
+    response = jsonify(templates)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    
+    return response, 200
 
 @app.route("/feedback", methods=["POST"])
 def post_feedback():
