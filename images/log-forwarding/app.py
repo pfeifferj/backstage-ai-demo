@@ -3,6 +3,7 @@ from flask_httpauth import HTTPBasicAuth
 import logging
 from redis import Redis, ConnectionPool
 import os
+import json
 from urllib.parse import urlparse
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -49,18 +50,22 @@ def log_post():
         data = request.form.to_dict()
         app.logger.info(f"Received POST request with form data: {data}")
 
-    if 'enable_redis_forwarding' in request.args:
+    if enable_redis_forwarding:
         try:
             data_str = json.dumps(data)
-
-
-            redis_client.rpush(datetime.now().isoformat(), data_str)
-
+            redis_client.rpush('events', data_str)
             app.logger.info("Data sent to Redis.")
-            return jsonify({"message": "Data successfully saved to Redis"}), 200
+
+            response = jsonify({"message": "Data successfully saved to Redis"})
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            response.headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+            response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+            return response, 200
         except Exception as e:
             app.logger.error(f"Failed to save data to Redis: {e}")
             return jsonify({"message": "Failed to save data to Redis", "error": str(e)}), 500
+    else:
+        return jsonify({"message": "Data received"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
