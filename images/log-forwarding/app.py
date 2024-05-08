@@ -50,22 +50,28 @@ def log_post():
 
     if 'enable_redis_forwarding' in request.args:
         try:
-            data_str = json.dumps(data)
-            timestamp = data[0]['timestamp']
+            if isinstance(data, list):
+                for event in data:
+                    event['timestamp'] = datetime.now().isoformat()
 
-            redis_client.rpush(f"data-{timestamp}", data_str)
+                    event_json = json.dumps(event)
 
-            app.logger.info("Data sent to Redis.")
-            return jsonify({"message": "Data pushed to data-{timestamp}"}), 200
+                    redis_client.rpush(events_key, event_json)
+
+                app.logger.info(f"Events sent to Redis. Key: {events_key}")
+                return jsonify({"message": f"Events pushed to {events_key}"}), 200
+            else:
+                data['timestamp'] = datetime.now().isoformat()
+
+                data_json = json.dumps(data)
+
+                redis_client.rpush(events_key, data_json)
+
+                app.logger.info(f"Event sent to Redis. Key: {events_key}")
+                return jsonify({"message": f"Event pushed to {events_key}"}), 200
         except Exception as e:
-            app.logger.error(f"Failed to save data to Redis: {e}")
-            return jsonify({"message": "Failed to save data to Redis", "error": str(e)}), 500
-
-    response = jsonify({"message": "POST request logged", "data": data})
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    return response, 200
+            app.logger.error(f"Failed to save event(s) to Redis: {e}")
+            return jsonify({"message": "Failed to save event(s) to Redis", "error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
