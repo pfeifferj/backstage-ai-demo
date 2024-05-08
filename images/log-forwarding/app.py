@@ -10,7 +10,8 @@ app = Flask(__name__)
 
 app.logger.setLevel(logging.DEBUG)
 
-enable_redis_forwarding = os.getenv('ENABLE_REDIS_FORWARDING', 'false').lower() in ['true', '1']
+# enable_redis_forwarding = os.getenv('ENABLE_REDIS_FORWARDING', 'false').lower() in ['true', '1']
+enable_redis_forwarding = True
 
 if enable_redis_forwarding:
     REDIS_URI = os.getenv('REDIS_URI', None)
