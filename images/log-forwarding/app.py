@@ -7,20 +7,8 @@ from urllib.parse import urlparse
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-# auth = HTTPBasicAuth()
 
 app.logger.setLevel(logging.DEBUG)
-
-# hashed_password = generate_password_hash(os.getenv('BASIC_AUTH_PASS', 'secret'))
-# users = {
-    # os.getenv('BASIC_AUTH_USER', 'admin'): hashed_password
-# }
-
-# @auth.verify_password
-# def verify_password(username, password):
-    # if username in users:
-        # return check_password_hash(users.get(username), password)
-    # return False
 
 enable_redis_forwarding = os.getenv('ENABLE_REDIS_FORWARDING', 'false').lower() in ['true', '1']
 
@@ -41,7 +29,6 @@ if enable_redis_forwarding:
 
 
 @app.route('/', methods=['OPTIONS'])
-# @auth.login_required
 def options_handler():
     headers = dict(request.headers)
     print(f"Received OPTIONS request with headers: {headers}")
@@ -64,12 +51,9 @@ def log_post():
     if 'enable_redis_forwarding' in request.args:
         try:
             data_str = json.dumps(data)
-            user_id = data[0]['user'].split('/')[-1]
+            timestamp = data[0]['timestamp']
 
-            app.logger.info("{user_id}")
-            redis_client.rpush(f"user:{user_id}:events", data_str)
-
-            # redis_client.rpush("posted_data", data_str)
+            redis_client.rpush(f"data-{timestamp}", data_str)
 
             app.logger.info("Data sent to Redis.")
             return jsonify({"message": "Data successfully saved to Redis"}), 200
