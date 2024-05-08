@@ -50,28 +50,40 @@ def log_post():
 
     if 'enable_redis_forwarding' in request.args:
         try:
+            # Check if the received data is a list of events
             if isinstance(data, list):
                 for event in data:
+                    # Add the current timestamp to the event
                     event['timestamp'] = datetime.now().isoformat()
 
+                    # Convert the event to JSON string
                     event_json = json.dumps(event)
 
+                    # Push the event JSON to the Redis list
                     redis_client.rpush(events_key, event_json)
 
                 app.logger.info(f"Events sent to Redis. Key: {events_key}")
                 return jsonify({"message": f"Events pushed to {events_key}"}), 200
             else:
+                # Add the current timestamp to the event
                 data['timestamp'] = datetime.now().isoformat()
 
+                # Convert the event to JSON string
                 data_json = json.dumps(data)
 
+                # Push the event JSON to the Redis list
                 redis_client.rpush(events_key, data_json)
 
                 app.logger.info(f"Event sent to Redis. Key: {events_key}")
                 return jsonify({"message": f"Event pushed to {events_key}"}), 200
-        except Exception as e:
+        except redis.RedisError as e:
             app.logger.error(f"Failed to save event(s) to Redis: {e}")
             return jsonify({"message": "Failed to save event(s) to Redis", "error": str(e)}), 500
+        except Exception as e:
+            app.logger.error(f"An error occurred: {e}")
+            return jsonify({"message": "An error occurred", "error": str(e)}), 500
+    else:
+        return jsonify({"message": "Event(s) received but not pushed to Redis"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
