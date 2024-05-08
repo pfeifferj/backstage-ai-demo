@@ -53,7 +53,6 @@ def options_handler():
     return response, 200
 
 @app.route('/', methods=['POST'])
-# @auth.login_required
 def log_post():
     if request.is_json:
         data = request.get_json()
@@ -62,23 +61,22 @@ def log_post():
         data = request.form.to_dict()
         app.logger.info(f"Received POST request with form data: {data}")
 
-
     if 'enable_redis_forwarding' in request.args:
-        data = request.json
         try:
+            data_str = json.dumps(data)
             user_id = data[0]['user'].split('/')[-1]
 
-            data_str = json.dumps(data)
+            app.logger.info("{user_id}")
+            redis_client.rpush(f"user:{user_id}:events", data_str)
 
-            timestamp = data[0]['timestamp']
-            redis_client.hset(f"user:{user_id}:events", timestamp, data_str)
+            # redis_client.rpush("posted_data", data_str)
 
             app.logger.info("Data sent to Redis.")
             return jsonify({"message": "Data successfully saved to Redis"}), 200
         except Exception as e:
             app.logger.error(f"Failed to save data to Redis: {e}")
             return jsonify({"message": "Failed to save data to Redis", "error": str(e)}), 500
-        
+
     response = jsonify({"message": "POST request logged", "data": data})
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
