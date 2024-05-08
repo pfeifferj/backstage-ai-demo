@@ -56,7 +56,7 @@ def log_post():
             redis_client.rpush(f"data-{timestamp}", data_str)
 
             app.logger.info("Data sent to Redis.")
-            return jsonify({"message": "Data successfully saved to Redis"}), 200
+            return jsonify({"message": "Data pushed to data-{timestamp}"}), 200
         except Exception as e:
             app.logger.error(f"Failed to save data to Redis: {e}")
             return jsonify({"message": "Failed to save data to Redis", "error": str(e)}), 500
