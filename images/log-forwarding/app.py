@@ -29,6 +29,10 @@ if enable_redis_forwarding:
     pool = ConnectionPool(host=redis_host, port=redis_port, db=redis_db)
     redis_client = Redis(host=redis_host, port=redis_port, db=redis_db, decode_responses=True)
 
+@app.errorhandler(400)
+def invalid_handler(exc):
+    app.logger.info(f"Exception: {exc}")
+    app.logger.info(f"Request: {request}")
 
 @app.route('/', methods=['OPTIONS'])
 def options_handler():

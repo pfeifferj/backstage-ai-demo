@@ -62,7 +62,7 @@ spec:
         method: 'POST'
         path: '/proxy/log-forwarding'
         headers:
-          Content-Type: 'application/json'
+          content-type: 'application/json'
         body:
           event:
             action: submit-order
