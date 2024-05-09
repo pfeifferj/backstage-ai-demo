@@ -35,31 +35,23 @@ spec:
           uniqueItems: true
           ui:widget: checkboxes
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: mozzarella-sticks-order-${{ parameters.quantity }}
-        repoDescription: 'Mozzarella sticks order with quantity and dipping sauces'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Quantity: ${{ parameters.quantity }}
-          Dipping Sauces: ${{ parameters.sauces }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for mozzarella sticks order'
+        method: 'POST'
+        path: '/proxy/log-forwarding'
+        headers:
+          content-type: 'application/json'
+        body:
+          event:
+            action: submit-order
+            attributes:
+              menu-item: morzerellasticks
+              sauces: ${{ parameters.sauces }}
+              quantity: ${{ parameters.quantity }}
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Mozzarella Sticks Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'

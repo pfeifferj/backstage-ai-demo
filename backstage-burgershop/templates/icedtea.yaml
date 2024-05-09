@@ -46,33 +46,25 @@ spec:
           description: Whether the iced tea is sweetened.
           default: false
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: iced-tea-order-${{ parameters.flavor }}-${{ parameters.size }}
-        repoDescription: 'Iced tea order with flavor, size, and additional options'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Flavor: ${{ parameters.flavor }}
-          Size: ${{ parameters.size }}
-          Ice: ${{ parameters.ice }}
-          Sweetened: ${{ parameters.sweetened }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for iced tea order'
+        method: 'POST'
+        path: '/proxy/log-forwarding'
+        headers:
+          content-type: 'application/json'
+        body:
+          event:
+            action: submit-order
+            attributes:
+              menu-item: icedtea
+              size: ${{ parameters.size }}
+              flavor: ${{ parameters.flavor }}
+              ice: ${{ parameters.ice }}
+              sweetened: ${{ parameters.sweetened }}             
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Iced Tea Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'

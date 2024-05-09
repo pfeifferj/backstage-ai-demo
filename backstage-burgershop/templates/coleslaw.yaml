@@ -37,31 +37,23 @@ spec:
           uniqueItems: true
           ui:widget: checkboxes
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: coleslaw-order-${{ parameters.size }}
-        repoDescription: 'Coleslaw order with size and extras'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Coleslaw Size: ${{ parameters.size }}
-          Extras: ${{ parameters.extras }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for coleslaw order'
+        method: 'POST'
+        path: '/proxy/log-forwarding'
+        headers:
+          content-type: 'application/json'
+        body:
+          event:
+            action: submit-order
+            attributes:
+              menu-item: coleslaw
+              size: ${{ parameters.size }}
+              extras: ${{ parameters.extras }}
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Coleslaw Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'

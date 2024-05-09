@@ -54,32 +54,24 @@ spec:
           uniqueItems: true
           ui:widget: checkboxes
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: double-cheeseburger-order-${{ parameters.size }}
-        repoDescription: 'Double cheeseburger order with size, sauces, and toppings'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Double Cheeseburger Size: ${{ parameters.size }}
-          Sauces: ${{ parameters.sauces }}
-          Toppings: ${{ parameters.toppings }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for double cheeseburger order'
+        method: 'POST'
+        path: '/proxy/log-forwarding'
+        headers:
+          content-type: 'application/json'
+        body:
+          event:
+            action: submit-order
+            attributes:
+              menu-item: doublecheeseburger
+              size: ${{ parameters.size }}
+              sauces: ${{ parameters.sauces }}
+              extras: ${{ parameters.toppings }}
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Double Cheeseburger Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'

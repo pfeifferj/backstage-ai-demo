@@ -46,33 +46,24 @@ spec:
           description: Whether to add extra sugar to the soda.
           default: false
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: soda-order-${{ parameters.flavor }}-${{ parameters.size }}
-        repoDescription: 'Soda order with flavor, size, and additional options'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Flavor: ${{ parameters.flavor }}
-          Size: ${{ parameters.size }}
-          Ice: ${{ parameters.ice }}
-          Extra Sugar: ${{ parameters.extra_sugar }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for soda order'
+        method: 'POST'
+        path: '/proxy/log-forwarding'
+        headers:
+          content-type: 'application/json'
+        body:
+          event:
+            action: submit-order
+            attributes:
+              menu-item: soda
+              size: ${{ parameters.size }}
+              flavor: ${{ parameters.flavor }}
+              extra_sugar: ${{ parameters.extra_sugar }}
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Soda Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'

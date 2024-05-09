@@ -13,10 +13,11 @@ spec:
         - base
       properties:
         base:
-          type: string
+          type: array
           title: Salad Base
           description: Choose the base for the salad.
           items:
+            type: string
             enum:
               - lettuce
               - spinach
@@ -26,7 +27,7 @@ spec:
               - Spinach
               - Kale
         dressings:
-          type: string
+          type: array
           title: Dressings
           description: Choose dressings for the salad.
           items:
@@ -64,33 +65,25 @@ spec:
             - medium
             - large
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: salad-order-${{ parameters.base }}-${{ parameters.size }}
-        repoDescription: 'Salad order with base, dressings, and toppings'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Salad Base: ${{ parameters.base }}
-          Salad Size: ${{ parameters.size }}
-          Dressings: ${{ parameters.dressings }}
-          Toppings: ${{ parameters.toppings }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for salad order'
+        method: 'POST'
+        path: '/proxy/log-forwarding'
+        headers:
+          content-type: 'application/json'
+        body:
+          event:
+            action: submit-order
+            attributes:
+              menu-item: salads
+              base: ${{ parameters.base }}
+              dressings: ${{ parameters.dressings }}
+              size: ${{ parameters.size }}
+              toppings: ${{ paramaters.toppings }}
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Salad Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'
