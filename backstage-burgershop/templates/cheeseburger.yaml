@@ -55,32 +55,23 @@ spec:
           uniqueItems: true
           ui:widget: checkboxes
   steps:
-    - id: create-git-repo
-      name: Create Git Repository
-      action: git:createRepository
+    - id: submit-order
+      name: Submit Order
+      action: http:backstage:request
       input:
-        repoName: cheeseburger-order-${{ parameters.size }}
-        repoDescription: 'Cheeseburger order with size, sauces, and extras'
-        repoVisibility: private
-        owner: '{{owner}}'
-    - id: write-order-file
-      name: Write Order File
-      action: file:write
-      input:
-        targetPath: 'order.txt'
-        content: |
-          Cheeseburger Size: ${{ parameters.size }}
-          Sauces: ${{ parameters.sauces }}
-          Extras: ${{ parameters.extras }}
-    - id: commit-order-file
-      name: Commit and Push Order File
-      action: git:commitAndPush
-      input:
-        repoRef: ${{ steps['create-git-repo'].output.repoRef }}
-        files:
-          - order.txt
-        commitMessage: 'Initial commit for cheeseburger order'
+        method: 'POST'
+        path: 'https://minimalistic-webserver-fries.apps.ocp4-prd.josie.cloud'
+        headers:
+          Content-Type: 'application/json'
+        body:
+          - event:
+              action: submit-order
+              attributes:
+                size: ${{ parameters.size }}
+                sauces: ${{ parameters.sauces }}
+                extras: ${{ parameters.extras }}
+
   output:
-    links:
-      - url: '${{ steps["create-git-repo"].output.repositoryUrl }}'
-        title: 'Git Repository for Cheeseburger Order'
+    orderResponse: '{{ steps["submit-order"].output.body }}'
+    orderStatusCode: '{{ steps["submit-order"].output.code }}'
+    orderHeaders: '{{ steps["submit-order"].output.headers }}'
