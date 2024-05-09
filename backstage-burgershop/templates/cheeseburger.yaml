@@ -60,16 +60,17 @@ spec:
       action: http:backstage:request
       input:
         method: 'POST'
-        path: 'https://minimalistic-webserver-fries.apps.ocp4-prd.josie.cloud'
+        path: '/proxy/log-forwarding'
         headers:
           Content-Type: 'application/json'
         body:
-          - event:
-              action: submit-order
-              attributes:
-                size: ${{ parameters.size }}
-                sauces: ${{ parameters.sauces }}
-                extras: ${{ parameters.extras }}
+          event:
+            action: submit-order
+            attributes:
+              menu-item: cheeseburger
+              size: ${{ parameters.size }}
+              sauces: ${{ parameters.sauces }}
+              extras: ${{ parameters.extras }}
 
   output:
     orderResponse: '{{ steps["submit-order"].output.body }}'
