@@ -5,24 +5,24 @@ app = Flask(__name__)
 templates = [
     {
         "id": "1",
-        "title": "Template 1",
-        "description": "This is the first template",
-        "tags": ["tag1", "tag2"],
-        "owner": "Owner 1",
+        "title": "Order Fries",
+        "description": "Create an order for fries with customizable size and sauces.",
+        "tags": ["side"],
+        "owner": "kitchen-team",
     },
     {
         "id": "2",
-        "title": "Template 2",
-        "description": "This is the second template",
-        "tags": ["tag2", "tag3"],
-        "owner": "Owner 2",
+        "title": "Order Milkshake",
+        "description": "Create an order for milkshake with customizable flavors and size.",
+        "tags": ["drink"],
+        "owner": "customer-service-team",
     },
     {
         "id": "3",
-        "title": "Template 3",
-        "description": "This is the third template",
-        "tags": ["tag1", "tag3"],
-        "owner": "Owner 3",
+        "title": "Order Cheeseburger",
+        "description": "Create an order for cheeseburger with customizable size, sauces, and toppings.",
+        "tags": ["main"],
+        "owner": "kitchen-team",
     },
 ]
 
